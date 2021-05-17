@@ -1,0 +1,286 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <title>Analisis de Algoritmos</title>
+  <script type="text/javascript" src="dist/vis.js"></script>
+  <link href="dist/vis-network.min.css" rel="stylesheet" type="text/css" />
+  <link rel="stylesheet" href="estilos.css">
+  <script type="text/javascript">
+    var nodes = null;
+    var edges = null;
+    var network = null;
+    // randomly create some nodes and edges
+    var data = getScaleFreeNetwork(25);
+    var seed = 2;
+
+    function setDefaultLocale() 
+    {
+        var defaultLocal = navigator.language;
+        var select = document.getElementById('locale');
+        select.selectedIndex = 0; // set fallback value
+        for (var i = 0, j = select.options.length; i < j; ++i) 
+        {
+            if (select.options[i].getAttribute('value') === defaultLocal) 
+            {
+                select.selectedIndex = i;
+                break;
+            }
+        }
+    }
+
+    function destroy() 
+    {
+        if (network !== null) 
+        {
+            network.destroy();
+            network = null;
+        }
+    }
+
+    function draw() 
+    {
+        destroy();
+        nodes = [];
+        edges = [];
+        // create a network
+        var container = document.getElementById('mynetwork');
+        var options = 
+            {
+                edges:
+                {
+                    arrows:'to',
+                    font:
+                    {
+                        align:'horizontal'
+                    }
+                },
+                physics:false, 
+                layout: {randomSeed:seed}, // just to make sure the layout is the same when the locale is changed
+                locale: document.getElementById('locale').value,
+                manipulation:
+                {
+                    addNode: function (data, callback) 
+                    {
+                        // filling in the popup DOM elements
+                        document.getElementById('node-operation').innerHTML = "Añadir Nodo";
+                        editNode(data, clearNodePopUp, callback);
+                    },
+                    editNode: function (data, callback)
+                    {
+                        // filling in the popup DOM elements
+                        document.getElementById('node-operation').innerHTML = "Editar Nodo";
+                        editNode(data, cancelNodeEdit, callback);
+                    },
+                    addEdge: function (data, callback) 
+                    {
+                        if (data.from == data.to) 
+                        {
+                            var r = confirm("Quiere hacer un bucle");
+                            if (r != true)
+                            {
+                                callback(null);
+                                return;
+                            }
+                        }
+                        document.getElementById('edge-operation').innerHTML = "Añadir Vertice";
+                        editEdgeWithoutDrag(data, callback);
+                    },
+                    editEdge:
+                    {
+                        editWithoutDrag: function(data, callback) 
+                        {
+                            document.getElementById('edge-operation').innerHTML = "Editar Vertice";
+                            editEdgeWithoutDrag(data,callback);
+                        }
+                    }
+                }
+            };
+        network = new vis.Network(container, data, options);
+    }
+
+    function editNode(data, cancelAction, callback) 
+    {
+        document.getElementById('node-label').value = data.label;
+        document.getElementById('node-saveButton').onclick = saveNodeData.bind(this, data, callback);
+        document.getElementById('node-cancelButton').onclick = cancelAction.bind(this, callback);
+        document.getElementById('node-popUp').style.display = 'block';
+    }
+
+    // Callback passed as parameter is ignored
+    function clearNodePopUp() 
+    {
+        document.getElementById('node-saveButton').onclick = null;
+        document.getElementById('node-cancelButton').onclick = null;
+        document.getElementById('node-popUp').style.display = 'none';
+    }
+
+    function cancelNodeEdit(callback) 
+    {
+        clearNodePopUp();
+        callback(null);
+    }
+
+    function saveNodeData(data, callback) 
+    {
+        try
+        {
+            data.id =document.getElementById('node-label').value;
+            data.label =document.getElementById('node-label').value;
+            clearNodePopUp();
+            callback(data); 
+        }
+        catch (error) 
+        {
+            alert("El Nodo "+document.getElementById('node-label').value+" ya existe");
+        }
+    }
+    
+    function editEdgeWithoutDrag(data, callback) 
+    {
+        document.getElementById('edge-label').value = data.label;
+        document.getElementById('edge-saveButton').onclick = saveEdgeData.bind(this, data, callback);
+        document.getElementById('edge-cancelButton').onclick = cancelEdgeEdit.bind(this,callback);
+        document.getElementById('edge-popUp').style.display = 'block';
+    }
+
+    function clearEdgePopUp() 
+    {
+        document.getElementById('edge-saveButton').onclick = null;
+        document.getElementById('edge-cancelButton').onclick = null;
+        document.getElementById('edge-popUp').style.display = 'none';
+    }
+
+    function cancelEdgeEdit(callback) 
+    {
+        clearEdgePopUp();
+        callback(null);
+    }
+
+    function saveEdgeData(data, callback) 
+    {
+        if (typeof data.to === 'object')
+        {
+            data.to = data.to.id
+        }
+        if (typeof data.from === 'object')
+        {
+            data.from = data.from.id
+        }
+        data.label = document.getElementById('edge-label').value;
+        clearEdgePopUp();
+        callback(data);
+    }
+
+    function init() 
+    {
+        setDefaultLocale();
+        draw();
+    }
+    function mostrar()
+    {
+        console.log(network.body);
+        var nodos=parseInt(network.body.nodeIndices.length);
+        var aristas=parseInt(network.body.edgeIndices.length);
+        var matris = new Array(nodos);
+        var matrisx="";
+        var nod=[];
+        var aris=[];
+        for (var i=0;i<nodos;i++)
+        {
+            nod.push(network.body.nodeIndices[i]);
+            matris[i]=new Array(nodos);
+        }
+        nod.sort();
+        for (var i=0;i<nodos;i++)
+        {
+            matrisx=matrisx+"       "+nod[i]+"  ";
+        }
+        for (var i=0;i<aristas;i++)
+        {
+            aris.push(network.body.edgeIndices[i]);
+        }
+        for (var f=0;f<nodos;f++)
+        {
+            matrisx=matrisx+"\n"+nod[f]+"     ";
+            for (var c=0;c<nodos;c++)
+            {
+                matris[f][c]=valores(nod[f],nod[c],aris);
+                matrisx=matrisx+matris[f][c]+"         ";
+            }
+              
+        }
+        alert(matrisx);
+        return matris;
+    }
+    function valores(x,y,aris)
+    {
+        var aux_edg=network.body.data.edges;
+        for (var i=0;i<aris.length;i++) 
+        {
+            if(aux_edg._data[aris[i]].from==x && aux_edg._data[aris[i]].to==y)
+            {
+                return parseInt(aux_edg._data[aris[i]].label);
+            }
+        }
+        return 0;
+    }
+    </script>
+
+</head>
+<center>
+<body onload="init();" style="background-color:#70adac">
+<header id="titulo">
+  <center>
+      <h1>ANALISIS DE ALGORITMOS</h1>
+      <h2>GRAFOS</h2>
+  </center>
+   <aside id="columna2">
+		<nav id="menu">
+			<li><a href="introduccion.html">GRAFOS</a></li><br><br>
+						
+		</nav>
+   </aside>
+   <aside id="columna">
+	    <nav id="menu">
+    		
+            <li><button type="button" onclick="draw();">Nuevo</button></li>
+        </nav>
+   </aside>
+</header>
+
+<p hidden="true">
+  
+  <select id="locale" onchange="draw();">
+    <option value="es">es</option>
+  </select>
+</p>
+<div id="node-popUp">
+  <span id="node-operation">node</span> <br>
+  <table style="margin:auto;">
+      <tr>
+          <td>Valor Nodo</td>
+          <td><input id="node-label" type="text"/></td>
+        </tr>
+  </table>
+  <input type="button" value="Guardar" id="node-saveButton" />
+  <input type="button" value="Cancelar" id="node-cancelButton" />
+</div>
+
+<div id="edge-popUp">
+  <span id="edge-operation">edge</span><br>
+  <table style="margin:auto;">
+     <tr>
+         <td>Valor Arista</td>
+          <td><input id="edge-label" type="number" /></td>
+     </tr>
+  </table>
+  <input type="button" value="guardar" id="edge-saveButton" />
+  <input type="button" value="cancelar" id="edge-cancelButton" />
+</div>
+
+<div id="mynetwork"></div>
+
+</center>
+</body>
+</html>
