@@ -1,11 +1,13 @@
 <!doctype html>
 <html>
 <head>
+
   <meta charset="utf-8"/>
   <title>Analisis de Algoritmos</title>
   <script type="text/javascript" src="dist/vis.js"></script>
   <link href="dist/vis-network.min.css" rel="stylesheet" type="text/css" />
   <link rel="stylesheet" href="estilos.css">
+
   <script type="text/javascript">
     var nodes = null;
     var edges = null;
@@ -14,32 +16,24 @@
     var data = getScaleFreeNetwork(25);
     var seed = 2;
 
-    function setDefaultLocale() 
-    {
+    function setDefaultLocale()     {
         var defaultLocal = navigator.language;
         var select = document.getElementById('locale');
         select.selectedIndex = 0; // set fallback value
-        for (var i = 0, j = select.options.length; i < j; ++i) 
-        {
-            if (select.options[i].getAttribute('value') === defaultLocal) 
-            {
+        for (var i = 0, j = select.options.length; i < j; ++i)        {
+            if (select.options[i].getAttribute('value') === defaultLocal)             {
                 select.selectedIndex = i;
                 break;
             }
         }
     }
-
-    function destroy() 
-    {
-        if (network !== null) 
-        {
+    function destroy()     {
+        if (network !== null)         {
             network.destroy();
             network = null;
         }
     }
-
-    function draw() 
-    {
+    function draw()     {
         destroy();
         nodes = [];
         edges = [];
@@ -98,9 +92,8 @@
             };
         network = new vis.Network(container, data, options);
     }
-
-    function editNode(data, cancelAction, callback) 
-    {
+    //editar el nodo
+    function editNode(data, cancelAction, callback)     {
         document.getElementById('node-label').value = data.label;
         document.getElementById('node-saveButton').onclick = saveNodeData.bind(this, data, callback);
         document.getElementById('node-cancelButton').onclick = cancelAction.bind(this, callback);
@@ -108,63 +101,52 @@
     }
 
     // Callback passed as parameter is ignored
-    function clearNodePopUp() 
-    {
+    function clearNodePopUp()     {
         document.getElementById('node-saveButton').onclick = null;
         document.getElementById('node-cancelButton').onclick = null;
         document.getElementById('node-popUp').style.display = 'none';
     }
-
-    function cancelNodeEdit(callback) 
-    {
+    //cancelar la edicion del nodo
+    function cancelNodeEdit(callback)     {
         clearNodePopUp();
         callback(null);
     }
-
-    function saveNodeData(data, callback) 
-    {
-        try
-        {
+    //guarda los datos del nodo
+    function saveNodeData(data, callback)     {
+        try        {
             data.id =document.getElementById('node-label').value;
             data.label =document.getElementById('node-label').value;
             clearNodePopUp();
             callback(data); 
         }
-        catch (error) 
-        {
+        catch (error)    {
             alert("El Nodo "+document.getElementById('node-label').value+" ya existe");
         }
     }
     
-    function editEdgeWithoutDrag(data, callback) 
-    {
+    function editEdgeWithoutDrag(data, callback)     {
         document.getElementById('edge-label').value = data.label;
         document.getElementById('edge-saveButton').onclick = saveEdgeData.bind(this, data, callback);
         document.getElementById('edge-cancelButton').onclick = cancelEdgeEdit.bind(this,callback);
         document.getElementById('edge-popUp').style.display = 'block';
     }
 
-    function clearEdgePopUp() 
-    {
+    function clearEdgePopUp()     {
         document.getElementById('edge-saveButton').onclick = null;
         document.getElementById('edge-cancelButton').onclick = null;
         document.getElementById('edge-popUp').style.display = 'none';
     }
 
-    function cancelEdgeEdit(callback) 
-    {
+    function cancelEdgeEdit(callback)     {
         clearEdgePopUp();
         callback(null);
     }
 
-    function saveEdgeData(data, callback) 
-    {
-        if (typeof data.to === 'object')
-        {
+    function saveEdgeData(data, callback)     {
+        if (typeof data.to === 'object')        {
             data.to = data.to.id
         }
-        if (typeof data.from === 'object')
-        {
+        if (typeof data.from === 'object')       {
             data.from = data.from.id
         }
         data.label = document.getElementById('edge-label').value;
@@ -172,13 +154,11 @@
         callback(data);
     }
 
-    function init() 
-    {
+    function init()     {
         setDefaultLocale();
         draw();
     }
-    function mostrar()
-    {
+    function mostrar()    {
         console.log(network.body);
         var nodos=parseInt(network.body.nodeIndices.length);
         var aristas=parseInt(network.body.edgeIndices.length);
@@ -186,25 +166,20 @@
         var matrisx="";
         var nod=[];
         var aris=[];
-        for (var i=0;i<nodos;i++)
-        {
+        for (var i=0;i<nodos;i++)        {
             nod.push(network.body.nodeIndices[i]);
             matris[i]=new Array(nodos);
         }
         nod.sort();
-        for (var i=0;i<nodos;i++)
-        {
+        for (var i=0;i<nodos;i++)        {
             matrisx=matrisx+"       "+nod[i]+"  ";
         }
-        for (var i=0;i<aristas;i++)
-        {
+        for (var i=0;i<aristas;i++)        {
             aris.push(network.body.edgeIndices[i]);
         }
-        for (var f=0;f<nodos;f++)
-        {
+        for (var f=0;f<nodos;f++)        {
             matrisx=matrisx+"\n"+nod[f]+"     ";
-            for (var c=0;c<nodos;c++)
-            {
+            for (var c=0;c<nodos;c++)            {
                 matris[f][c]=valores(nod[f],nod[c],aris);
                 matrisx=matrisx+matris[f][c]+"         ";
             }
@@ -213,23 +188,67 @@
         alert(matrisx);
         return matris;
     }
-    function valores(x,y,aris)
-    {
+    function valores(x,y,aris)    {
         var aux_edg=network.body.data.edges;
-        for (var i=0;i<aris.length;i++) 
-        {
-            if(aux_edg._data[aris[i]].from==x && aux_edg._data[aris[i]].to==y)
-            {
+        for (var i=0;i<aris.length;i++)         {
+            if(aux_edg._data[aris[i]].from==x && aux_edg._data[aris[i]].to==y)            {
                 return parseInt(aux_edg._data[aris[i]].label);
             }
         }
         return 0;
     }
+
+    function construir_matriz(nodos_dia,id_dia,aristas_a,aristas_a2){
+        var tipo_g=document.getElementById('grafo').value;
+        var matriz1=[];
+        var matriz_pos=[];
+        console.log(nodos_dia.length);
+        for(var i=0;i<nodos_dia.length;i++){
+            matriz1[i]=[];
+            for (var j = 0; j < nodos_dia.length; j++) {
+                matriz1[i][j]=0;
+            }
+        }
+        for(var i=0;i<nodos_dia.length;i++){
+            matriz_pos[i]=[];
+            for (var j = 0; j < nodos_dia.length; j++) {
+                matriz_pos[i][j]=0;
+            }
+        }
+
+        for(var i=0;i<aristas_a2;i++){
+            matriz1[aristas_a[i][0]][aristas_a[i][1]]=parseInt(aristas_a[i][2]);
+            matriz_pos[aristas_a[i][0]][aristas_a[i][1]]=1;
+        }
+        return {
+
+            mat1:matriz1,
+            mat2:matriz_pos
+        };
+        console.log(matriz1);
+
+    }
+    //descargar el archivo html
+    function download(filename, text) {
+        var pom = document.createElement('a');
+        pom.setAttribute('href', 'data:text/html,' + encodeURIComponent(text));
+        pom.setAttribute('download', filename);
+
+        if (document.createEvent) {
+            var event = document.createEvent('MouseEvents');
+            event.initEvent('click', true, true);
+            pom.dispatchEvent(event);
+        }
+        else {
+            pom.click();
+        }
+    }
+
     </script>
 
 </head>
 <center>
-<body onload="init();" style="background-color:#70adac">
+<body onload="init();" style="background-color:#efe67b">
 <header id="titulo">
   <center>
       <h1>ANALISIS DE ALGORITMOS</h1>
@@ -237,7 +256,10 @@
   </center>
    <aside id="columna2">
 		<nav id="menu">
-			<li><a href="introduccion.html">GRAFOS</a></li><br><br>
+            <li><a href="introduccion.html">GRAFOS</a></li><br><br>
+            <li><a href="asignacion.html">ASIGNACION</a></li><br><br>
+            <li><a href="jhonson.html">JHONSON</a></li><br><br>
+            <li><a href="kramer.html">KRAMmER</a></li><br><br>
 						
 		</nav>
    </aside>
@@ -245,6 +267,8 @@
 	    <nav id="menu">
     		
             <li><button type="button" onclick="draw();">Nuevo</button></li>
+            <li><button type="button" onclick="construir_matriz(nodes,1,1,1);">Matriz</button></li>
+            <li><button type="button" onclick="download('prueba','');">Guardar</button></li>
         </nav>
    </aside>
 </header>
@@ -255,6 +279,38 @@
     <option value="es">es</option>
   </select>
 </p>
+
+<div id="node-matriz">
+    <span id="matrizId">matriz</span> <br>
+
+    <table style="margin:auto;">
+        <tr>
+            <td>Matriz</td>
+            <td>
+                <output>
+                    <form name="MAtriz">
+
+                        A=<BR> <input type="text" size="3">
+                        <input type="text" size="3">
+                        <input type="text" size="3"><BR>
+                        <input type="text" size="3">
+                        <input type="text" size="3">
+                        <input type="text" size="3"><BR>
+                        <input type="text" size="3">
+                        <input type="text" size="3">
+                        <input type="text" size="3">
+
+                    </form>
+
+                </output>
+
+            </td>
+        </tr>
+    </table>
+
+    <input type="button" value="Aceptar" id="node-accept" />
+</div>
+
 <div id="node-popUp">
   <span id="node-operation">node</span> <br>
   <table style="margin:auto;">

@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <title>Analisis de Algoritmos</title>
+    <script type="text/javascript" src="dist/vis.js"></script>
+    <link href="dist/vis-network.min.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="estilos.css">
+
+
+</head>
+
+<body onload="init();" style="background-color: #70adac ">
+<header id="titulo">
+    <center>
+        <h1>ANALISIS DE ALGORITMOS</h1>
+        <h2>INSERTION SORT</h2>
+    </center>
+    <aside id="columna2">
+        <nav id="menu">
+            <li><a href="introduccion.html">GRAFOS</a></li><br><br>
+            <li><a href="asignacion.html">ASIGNACION</a></li><br><br>
+            <li><a href="jhonson.html">JHONSON</a></li><br><br>
+            <li><a href="kramer.html">KRAMmER</a></li><br><br>
+            <li><a href="insertionSort.html.html">SELECTION SORT</a></li><br><br>
+        </nav>
+    </aside>
+    <aside id="columna">
+        <nav id="menu">
+            <li><button type="button" class="btn btn-primary" id="export_button" onclick="ver()">Resultado</button></li><br>
+            <li><button type="button" class="btn btn-primary " id="export_button1" onclick="actualizar()">Nuevo</button></li>
+        </nav>
+    </aside>
+</header>
+<center>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12 text-center">
+                <p >
+                    <!--  <label for="locale">Select a locale:</label>-->
+                    <select id="locale" onchange="draw();">
+                        <option value="en">en</option>
+                        <option value="de">de</option>
+                        <option value="es">es</option>
+                        <option value="it">it</option>
+                        <option value="nl">nl</option>
+                        <option value="pt-br">pt</option>
+                        <option value="ru">ru</option>
+                    </select>
+                </p>
+                <div id="node-popUp">
+                    <span id="node-operation">NODO</span> <br>
+                    <table style="margin:auto;">
+                        <!-- <tr>
+                           <td>id</td><td><input id="node-id" value="new value" /></td>
+                         </tr>-->
+                        <tr>
+                            <td>VALOR</td><td><input type="number" id="node-label" value="" ></td>
+                        </tr>
+                    </table>
+                    <input type="button" value="GUARDAR" id="node-saveButton" />
+                    <!--<input type="button" value="cancel" id="node-cancelButton" />-->
+                </div>
+
+                <div id="edge-popUp">
+                    <span id="edge-operation">ARISTA</span> <br>
+                    <table style="margin:auto;">
+                        <tr>
+                            <td>VALOR</td><td><input type="number" id="edge-label" value="" ></td>
+                        </tr></table>
+                    <input type="button"  value="GUARDAR" id="edge-saveButton" />
+                    <!--<input type="button" value="cancel" id="edge-cancelButton" />-->
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12 text-center">
+                <div id="mynetwork"></div>
+            </div>
+        </div>
+    </div>
+</center>
+
+<script type="text/javascript">
+
+const selectionSort = arr => {
+for ( let j = 0; j < arr.length; ++j ) {
+let i = iMin = j;
+for ( ++i; i < arr.length; ++i ) {
+( arr[ i ] < arr[ iMin ] ) && ( iMin = i );
+}
+[ arr[ j ], arr[ iMin ] ] = [ arr[ iMin ], arr[ j ] ];
+}
+
+return arr;
+}
+
+const arr = [10, 4, 40, 32, 67, 12, 43, 31, 65, 1];
+const result = selectionSort(arr);
+
+
+</script>
+
+<script src="vendor/jquery/jquery.min.js"></script>
+<script src="vendor/popper/popper.min.js"></script>
+<script src="vendor/bootstrap/js/bootstrap.min.js"></script>
+
+</body>
+</html>
